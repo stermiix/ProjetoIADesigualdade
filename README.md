@@ -1,107 +1,54 @@
-# Percepção dos Brasileiros sobre Desigualdade — Simulação com LLM
+# Projeto IA — Simulação de Opinião Pública sobre Desigualdade
 
-Projeto desenvolvido para a disciplina de Inteligência Artificial.  
-Simula respostas de questionários do CESOP (Centro de Estudos de Opinião Pública / UNICAMP) usando modelos de linguagem abertos (LLMs), comparando as distribuições simuladas com as respostas reais da pesquisa.
+Trabalho da disciplina de Inteligência Artificial.
 
----
+O objetivo é usar um modelo de linguagem (LLM) para simular como brasileiros respondem perguntas sobre desigualdade social, comparando as respostas geradas com os dados reais de uma pesquisa do CESOP/UNICAMP.
 
-## Tema
+## Sobre o projeto
 
-**Percepção dos Brasileiros sobre Temas Relacionados à Desigualdade**
+A ideia central é: dado o perfil de uma pessoa (sexo, idade, escolaridade, renda, região, raça/cor, religião...), conseguimos prever como ela responderia uma pesquisa de opinião?
 
-Baseado no artigo:
-> *Simulating Public Opinion: Comparing Distributional and Individual-Level Predictions from LLMs and Random Forests*
+Usamos dados da **Pesquisa 04839 do CESOP/UNICAMP** — "Percepção dos Brasileiros sobre Temas Relacionados à Desigualdade" — com 2000 respondentes, e simulamos respostas para duas perguntas:
 
----
+- **P01**: Em qual local existe mais diferença no tratamento entre pessoas negras e brancas?
+- **P06 (A–E)**: Concordância com afirmações sobre desigualdade estrutural (escala Likert 1–5)
 
-## Estrutura do Repositório
+As respostas simuladas são comparadas com as reais usando Jensen-Shannon Distance, KL divergence e F1-macro. O projeto também compara o LLM com um Random Forest e aplica SHAP para identificar quais variáveis demográficas mais influenciam as respostas.
+
+## Estrutura
 
 ```
-percepcao-desigualdade-brasil/
-├── data/
-│   ├── raw/             # Dados brutos CESOP (adicionar manualmente)
-│   └── processed/       # Dados pré-processados
+ProjetoIADesigualdade/
 ├── notebooks/
-│   └── simulacao_opiniao_publica.ipynb   # Notebook principal (Colab)
-├── src/
-│   ├── preprocessing.py   # Pré-processamento dos dados
-│   ├── llm_simulator.py   # Simulação via LLM
-│   └── evaluation.py      # Métricas e explicabilidade
-├── results/
-│   ├── figures/           # Gráficos gerados
-│   └── metrics/           # Métricas salvas (JSON/CSV)
+│   └── simulacao_opiniao_publica.ipynb   # notebook principal (Colab)
 ├── artigo/
-│   └── artigo_sbc.tex     # Artigo em formato SBC (LaTeX)
-├── requirements.txt
-└── README.md
+│   ├── artigo_sbc.tex                    # artigo formato SBC (LaTeX)
+│   ├── referencias.bib
+│   └── entropy-27-00923.pdf             # artigo de referência
+├── data/
+│   └── raw/04839/                        # questionário e tabela de frequências CESOP
+├── results/                              # gráficos e métricas gerados
+└── requirements.txt
 ```
 
----
+## Como rodar
 
-## Metodologia
+Desenvolvido para rodar no **Google Colab** sem GPU local ou API keys pagas. Todos os modelos são abertos via HuggingFace.
 
-1. **Dados**: Questionário CESOP sobre percepção de desigualdade
-2. **LLM**: Modelos abertos via HuggingFace (sem API key privada) — Mistral, Flan-T5, LLaMA
-3. **Simulação**: Mínimo 200 respondentes simulados (≥10% dos dados), 3–5 repetições com validação cruzada
-4. **Avaliação**:
-   - Acurácia individual (resposta por resposta)
-   - Distribuições das respostas (KL divergence, Earth Mover's Distance)
-   - Explicabilidade (SHAP, importância de variáveis)
-5. **Comparação Extra**: Random Forest vs LLM (conforme artigo de referência)
+1. Abra `notebooks/simulacao_opiniao_publica.ipynb` no Colab
+2. Faça upload do `04839.sav` quando solicitado (disponível no CESOP/UNICAMP)
+3. Execute as células em ordem
 
----
-
-## Como Executar
-
-### Colab (recomendado)
-
-[![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEU_USUARIO/percepcao-desigualdade-brasil/blob/main/notebooks/simulacao_opiniao_publica.ipynb)
-
-### Local
-
+Para rodar localmente:
 ```bash
 pip install -r requirements.txt
 jupyter notebook notebooks/simulacao_opiniao_publica.ipynb
 ```
 
----
+## Dados
 
-## Dados CESOP
+Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/). O arquivo `.sav` não está no repositório por restrição de distribuição — baixe diretamente no site do CESOP.
 
-Os dados utilizados são provenientes do **CESOP/UNICAMP** — Centro de Estudos de Opinião Pública.  
-Por restrições de redistribuição, os dados brutos devem ser obtidos diretamente em: https://www.cesop.unicamp.br/
+## Referência principal
 
-Coloque os arquivos na pasta `data/raw/`.
-
----
-
-## Tecnologias
-
-| Ferramenta | Uso |
-|---|---|
-| `transformers` (HuggingFace) | LLM para simulação de respostas |
-| `pandas` / `numpy` | Manipulação de dados |
-| `scikit-learn` | Random Forest, métricas, CV |
-| `shap` | Explicabilidade |
-| `matplotlib` / `seaborn` / `plotly` | Visualizações |
-| `scipy` | KL divergence, Earth Mover's Distance |
-
----
-
-## Autores
-
-- [Bernardo S. Oliveira](mailto:bernar.s.oli@gmail.com)
-
----
-
-## Referências
-
-- Artigo base: *Simulating Public Opinion: Comparing Distributional and Individual-Level Predictions from LLMs and Random Forests*
-- CESOP/UNICAMP: https://www.cesop.unicamp.br/
-- Normas SBC: https://www.sbc.org.br/documentos-da-sbc/summary/169-templates-para-artigos-e-capitulos-de-livros/878-modelosparapublicaodeartigos
-
----
-
-## Vídeo de Apresentação
-
-> Link a ser adicionado após gravação.
+Miranda, F.; Balbi, P.P. *Simulating Public Opinion: Comparing Distributional and Individual-Level Predictions from LLMs and Random Forests*. Entropy, 27(9), 923, 2025. https://doi.org/10.3390/e27090923
