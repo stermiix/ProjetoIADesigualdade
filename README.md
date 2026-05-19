@@ -20,20 +20,28 @@ As respostas simuladas são comparadas com as reais usando Jensen-Shannon Distan
 ```
 ProjetoIADesigualdade/
 ├── notebooks/
-│   └── simulacao_opiniao_publica.ipynb   # notebook principal (Colab)
+│   └── simulacao_opiniao_publica.ipynb
 ├── artigo/
-│   ├── artigo_sbc.tex                    # artigo formato SBC (LaTeX)
+│   ├── artigo_sbc.tex
 │   ├── referencias.bib
-│   └── entropy-27-00923.pdf             # artigo de referência
+│   └── entropy-27-00923.pdf
 ├── data/
-│   └── raw/04839/                        # questionário e tabela de frequências CESOP
-├── results/                              # gráficos e métricas gerados
+│   └── raw/04839/
+├── results/
 └── requirements.txt
 ```
 
+## Arquivos
+
+- [Notebook principal](notebooks/simulacao_opiniao_publica.ipynb)
+- [Artigo SBC (LaTeX)](artigo/artigo_sbc.tex)
+- [Artigo de referência](artigo/entropy-27-00923.pdf)
+- [Questionário CESOP](data/raw/04839/quest_04839.pdf)
+- [Tabela de frequências](data/raw/04839/TF_04839.pdf)
+
 ## Como rodar
 
-Desenvolvido para rodar no **Google Colab** sem GPU local ou API keys pagas. Todos os modelos são abertos via HuggingFace.
+Desenvolvido para rodar no **Google Colab** sem GPU local ou API keys pagas.
 
 1. Abra `notebooks/simulacao_opiniao_publica.ipynb` no Colab
 2. Faça upload do `04839.sav` quando solicitado (disponível no CESOP/UNICAMP)
@@ -48,6 +56,14 @@ jupyter notebook notebooks/simulacao_opiniao_publica.ipynb
 ## Dados
 
 Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/). O arquivo `.sav` não está no repositório por restrição de distribuição — baixe diretamente no site do CESOP.
+
+## Autores
+
+- André Moreira Guimarães — 10416590
+- Bernardo Souza Oliveira — 10312871
+- Henrique Yuji Isogai Yoneoka — 10418153
+- João Victor Martins — 10417928
+- Leonardo Patriani Cardoso — 10417188
 
 ## Referência principal
 
