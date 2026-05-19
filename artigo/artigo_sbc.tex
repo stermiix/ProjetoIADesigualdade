@@ -1,0 +1,266 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{subcaption}
+
+\sloppy
+
+\title{Simulação da Percepção dos Brasileiros sobre Desigualdade\\
+       com Modelos de Linguagem de Grande Escala}
+
+\author{Bernardo S. Oliveira\inst{1}}
+
+\address{Curso de Sistemas de Informação\\
+  \email{bernar.s.oli@gmail.com}
+}
+
+\begin{document}
+
+\maketitle
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{abstract}
+This paper investigates whether open-source Large Language Models (LLMs) can
+simulate the opinions of Brazilian citizens regarding social inequality, replicating
+the methodology of \citet{miranda2025} in a Brazilian context.
+Using survey data from CESOP/UNICAMP (study 04839, $N{=}2000$), we conditioned
+an LLM on ten sociodemographic attributes and simulated answers to two sets of
+questions: P01 (main location of racial inequality) and P06A--E (five Likert-scale
+items on structural inequality).
+We evaluate distributional fidelity through Jensen--Shannon Distance (JSD), KL
+divergence, and Earth Mover's Distance, and individual accuracy via F1-macro.
+We further compare LLM performance against a Random Forest baseline with
+5-fold cross-validation and apply SHAP to explain which demographic features
+most drive the simulated responses.
+All models are fully open-source and executable on Google Colab without
+private API keys.
+Results indicate that [\textit{to be completed after experiments}].
+\end{abstract}
+
+\begin{resumo}
+Este artigo investiga se Modelos de Linguagem de Grande Escala (LLMs) de código
+aberto conseguem simular opiniões de brasileiros sobre desigualdade social,
+replicando a metodologia de \citet{miranda2025} no contexto brasileiro.
+Utilizando dados da Pesquisa 04839 do CESOP/UNICAMP ($N{=}2000$), condicionamos
+um LLM a dez atributos sociodemográficos e simulamos respostas a dois conjuntos
+de questões: P01 (principal local de desigualdade racial) e P06A--E (cinco
+itens Likert sobre desigualdade estrutural).
+Avaliamos a fidelidade distributiva por meio de Jensen--Shannon Distance (JSD),
+Divergência KL e Earth Mover's Distance, e a acurácia individual via F1-macro.
+Comparamos o LLM a um Random Forest com validação cruzada de 5 folds e
+aplicamos SHAP para explicar quais variáveis demográficas mais influenciam
+as respostas simuladas. Todos os modelos são 100\% abertos e executáveis no
+Google Colab sem chaves de API privadas.
+Os resultados indicam que [\textit{a preencher após experimentos}].
+\end{resumo}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introdução}
+
+A desigualdade social é um dos fenômenos mais persistentes e multidimensionais
+da sociedade brasileira \citep{soares2006}. Pesquisas de opinião pública como as
+conduzidas pelo CESOP/UNICAMP \citep{cesop2023} fornecem dados empíricos valiosos
+sobre como diferentes grupos percebem essa realidade, mas sua realização é
+custosa e demorada.
+
+Recentemente, \citet{miranda2025} demonstraram que LLMs conseguem simular
+opiniões de eleitores americanos em um cenário \textit{zero-shot}, igualando o
+Random Forest em nível individual e superando-o em fidelidade distribucional,
+medida pela Jensen--Shannon Distance. Este trabalho replica e estende essa
+abordagem para o contexto brasileiro, usando exclusivamente modelos abertos
+sem chaves de API privadas.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Trabalhos Relacionados}
+
+\citet{miranda2025} condicionaram o Gemma3 12B a perfis de respondentes do ANES
+2020 (EUA) e compararam as simulações com um Random Forest treinado nos mesmos
+dados. Os LLMs produziram distribuições de opinião mais próximas do real (menor
+JSD) mesmo sem acesso às respostas durante a inferência. \citet{argyle2023}
+introduziram o conceito de \textit{silicon sampling}, mostrando que LLMs podem
+ser condicionados via \textit{backstory} para simular sub-populações específicas.
+
+No Brasil, estudos de NLP para português avançaram com modelos como o BERTimbau
+\citep{souza2020}, enquanto o CESOP mantém décadas de acervo de pesquisas de
+opinião pública \citep{cesop2023}. A interseção entre LLMs e simulação de opinião
+pública brasileira permanece, entretanto, inexplorada.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Metodologia}
+
+\subsection{Dados}
+
+Utilizamos a Pesquisa 04839 do CESOP/UNICAMP \citep{cesop2023}, sobre percepção
+de desigualdade no Brasil, com $N{=}2000$ respondentes e 49 variáveis.
+Uma amostra estratificada de $\geq$200 respondentes (10\%) foi selecionada para
+os experimentos.
+
+\subsubsection{Variáveis preditoras (10 atributos sociodemográficos)}
+Sexo, faixa etária, escolaridade, raça/cor autodeclarada, religião, renda pessoal,
+renda familiar, região, condição e porte do município.
+
+\subsubsection{Variáveis-resposta (6 questões)}
+
+\textbf{P01}: ``Em qual local você acredita que existe mais diferença no tratamento
+de pessoas negras e brancas?'' (9 opções, incluindo ``não existe diferença'').
+
+\textbf{P06A--E}: Concordância (escala Likert 1--5) com cinco afirmações sobre
+desigualdade estrutural:
+\begin{itemize}
+  \item[\textbf{A}] Abordagem policial é baseada em cabelo, vestimenta e cor de pele;
+  \item[\textbf{B}] Maior presença de negros e indígenas nas universidades é bom para a sociedade;
+  \item[\textbf{C}] Representatividade de negros, mulheres e LGBTQIA+ na política reduz desigualdades;
+  \item[\textbf{D}] O mercado imobiliário garante moradia digna para toda a população;
+  \item[\textbf{E}] Mudanças climáticas afetam igualmente todas as pessoas, independente de raça/classe.
+\end{itemize}
+
+\subsection{Modelo LLM}
+
+Seguindo \citet{miranda2025}, utilizamos um LLM em configuração \textit{zero-shot}.
+Por restrição de recursos, empregamos o \texttt{google/flan-t5-xl} \citep{chung2022},
+disponível no HuggingFace sem autenticação. Para experimentos com GPU de 15+ GB,
+o \texttt{Mistral-7B-Instruct-v0.2} \citep{mistral2023} com quantização 4-bit
+foi testado como alternativa de maior qualidade.
+
+\subsubsection{Engenharia de Prompts}
+
+Cada respondente é descrito textualmente com base em seus atributos
+sociodemográficos (\textit{backstory}). O modelo recebe essa descrição, o texto
+completo da pergunta e as opções numeradas, sendo instruído a responder apenas
+com o número da opção.
+
+\begin{quote}
+\small
+\textit{``Você é um cidadão brasileiro com o seguinte perfil: mulher, entre 35 e
+44 anos, escolaridade: ensino médio completo, renda familiar: de 2 a 5 SM,
+região: Nordeste, mora em capital, raça/cor: parda, religião: evangélica/protestante.}\\
+\textit{Afirmação: `A abordagem policial é baseada no tipo de cabelo, vestimenta
+e cor de pele das pessoas.'}\\
+\textit{Você concorda ou discorda? Opções: (1) Concorda totalmente (2) Concorda
+em parte (3) Nem concorda nem discorda (4) Discorda em parte (5) Discorda totalmente.}\\
+\textit{Responda APENAS com o número da opção (1–5):''}
+\end{quote}
+
+\subsection{Protocolo Experimental}
+
+\begin{itemize}
+  \item \textbf{Amostra}: $n \geq 200$ respondentes (amostragem estratificada por P01)
+  \item \textbf{Repetições}: $K{=}3$--5 runs independentes para estimar variância
+  \item \textbf{Comparação}: Random Forest com validação cruzada estratificada ($K{=}5$ folds)
+  \item \textbf{Explicabilidade}: SHAP sobre RF treinado nas predições agregadas do LLM
+\end{itemize}
+
+\subsection{Métricas de Avaliação}
+
+\textbf{Individual}: Acurácia e F1-score macro.
+
+\textbf{Distribucional} (conforme \citealt{miranda2025}):
+
+\textit{Jensen--Shannon Distance} (JSD) --- métrica principal, simétrica e limitada a $[0,1]$:
+\begin{equation}
+  \text{JSD}(P\|Q) = \sqrt{\frac{1}{2}D_{KL}(P\|M) + \frac{1}{2}D_{KL}(Q\|M)},
+  \quad M = \frac{P+Q}{2}
+  \label{eq:jsd}
+\end{equation}
+
+\textit{Earth Mover's Distance} (Wasserstein), sensível à ordem da escala Likert.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Resultados}
+
+\subsection{Desempenho Individual}
+
+A Tabela~\ref{tab:accuracy} apresenta acurácia e F1-macro do LLM por variável
+(média $\pm$ desvio sobre $K$ runs).
+
+\begin{table}[H]
+  \centering
+  \caption{Desempenho individual do LLM (média $\pm$ dp, $K$ runs)}
+  \label{tab:accuracy}
+  \small
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Variável} & \textbf{Acurácia} & \textbf{F1-macro}
+                      & \textbf{JSD} & \textbf{EMD} \\
+    \midrule
+    P01                 & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    P06A                & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    P06B                & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    P06C                & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    P06D                & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    P06E                & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    \midrule
+    \textbf{Média}      & \textit{--} & \textit{--} & \textit{--} & \textit{--} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Distribuições: Real vs.\ Simulado}
+
+A Figura~\ref{fig:dist} compara as distribuições de respostas reais e
+simuladas (barras laterais com barras de erro entre runs).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{../results/figures/distribuicoes_real_vs_llm.png}
+  \caption{Distribuições reais vs.\ LLM simulado por variável (CESOP 04839)}
+  \label{fig:dist}
+\end{figure}
+
+\subsection{LLM vs.\ Random Forest}
+
+A Figura~\ref{fig:rf} compara acurácia e F1-macro do LLM com o Random Forest
+treinado com validação cruzada 5-fold nos mesmos dados.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{../results/figures/llm_vs_rf.png}
+  \caption{Comparação LLM vs.\ Random Forest (CV 5-fold)}
+  \label{fig:rf}
+\end{figure}
+
+\subsection{Explicabilidade (SHAP)}
+
+A Figura~\ref{fig:shap} mostra a importância SHAP das variáveis demográficas
+nas predições do LLM para cada questão.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{../results/figures/shap_importance.png}
+  \caption{Importância SHAP: variáveis demográficas $\rightarrow$ predições do LLM}
+  \label{fig:shap}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Discussão}
+
+\textit{[A preencher após análise dos resultados.]}
+
+Corroborando \citet{miranda2025}, esperamos que o LLM supere o Random Forest em
+fidelidade distribucional (menor JSD) enquanto apresenta acurácia individual
+comparável. A variável \texttt{RACA\_COR} deve emergir como principal preditor
+SHAP para P01, refletindo o peso do marcador racial nas percepções de desigualdade.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusão}
+
+Este trabalho replicou a metodologia de \citet{miranda2025} no contexto
+brasileiro, usando o CESOP 04839 e modelos abertos sem API privada.
+\textit{[Completar com achados principais após experimentos.]}
+
+Como extensões futuras pretende-se testar modelos maiores (Llama~3, Sabiá),
+incorporar variáveis atitudinais nos prompts e expandir para outras pesquisas do CESOP.
+
+\bibliographystyle{sbc}
+\bibliography{referencias}
+
+\end{document}
