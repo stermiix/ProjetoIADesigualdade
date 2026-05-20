@@ -10,9 +10,6 @@ env/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# Dados brutos SAV — não versionar por licença CESOP
-data/raw/**/*.sav
-
 # Pasta original com espaços (mantida para referência local)
 04839 PERCEPÇÃO DOS BRASILEIROS SOBRE TEMAS RELACIONADOS À DESIGUALDADE/
 
