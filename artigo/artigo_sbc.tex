@@ -1,25 +1,23 @@
 \documentclass[12pt]{article}
 
 \usepackage{sbc-template}
-\usepackage[brazil]{babel}
+\usepackage{graphicx,url}
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{hyperref}
+\usepackage[brazil]{babel}
 \usepackage{amsmath}
+\usepackage{booktabs}
 \usepackage{float}
 
 \sloppy
 
-\title{Simulação da Percepção dos Brasileiros sobre Desigualdade\\
+\title{Simulacao da Percepcao dos Brasileiros sobre Desigualdade
        com Modelos de Linguagem de Grande Escala}
 
-\author{André M. Guimarães\inst{1}, Bernardo S. Oliveira\inst{1},
-        Henrique Y. I. Yoneoka\inst{1}, João V. Martins\inst{1},
+\author{Andre M. Guimaraes\inst{1}, Bernardo S. Oliveira\inst{1},
+        Henrique Y. I. Yoneoka\inst{1}, Joao V. Martins\inst{1},
         Leonardo P. Cardoso\inst{1}}
 
-\address{Curso de Sistemas de Informação -- Universidade Presbiteriana Mackenzie\\
+\address{Curso de Sistemas de Informacao -- Universidade Presbiteriana Mackenzie\\
   \email{\{10416590, 10312871, 10418153, 10417928, 10417188\}@mackenzista.com.br}
 }
 
@@ -29,55 +27,55 @@
 
 \begin{abstract}
 This paper investigates the use of open-source Large Language Models (LLMs)
-to simulate Brazilian public opinion on social inequality, adapting the methodology
-of \citet{miranda2025} to a Brazilian context.
-Using data from CESOP/UNICAMP survey 04839 ($N{=}2000$), we conditioned the
+to simulate Brazilian public opinion on social inequality, adapting the
+methodology of \cite{miranda2025} to a Brazilian context.
+Using data from CESOP/UNICAMP survey 04839 ($N=2000$), we conditioned the
 \texttt{flan-t5-xl} model on ten sociodemographic attributes and simulated
-responses to six questions in a zero-shot setting: one ranking question about
+responses to six questions in a zero-shot setting: one ranking question on
 racial inequality (P01) and five Likert-scale items on structural inequality
 (P06A--E).
 Distributional fidelity was measured using Jensen-Shannon Distance (JSD),
-KL divergence, and Earth Mover's Distance. Individual accuracy was evaluated
-via accuracy and F1-macro, and compared against a Random Forest baseline
-with 5-fold cross-validation. SHAP values were used to assess the relative
-importance of demographic variables.
-The LLM achieved a mean individual accuracy of 19.3\% and mean JSD of 0.29,
-while the Random Forest reached 41.2\% accuracy. Unlike \citet{miranda2025},
-the LLM did not outperform the supervised model at the distributional level,
-likely due to the use of a model not optimized for Portuguese.
+KL divergence, and Earth Mover's Distance. Individual accuracy was compared
+against a Random Forest baseline with 5-fold cross-validation, and SHAP
+values identified the most influential demographic variables.
+The LLM achieved a mean accuracy of 19.3\% and mean JSD of 0.29,
+while the Random Forest reached 41.2\%. Unlike \cite{miranda2025},
+the LLM did not outperform the supervised model at the distributional
+level, likely due to the use of a model not optimized for Portuguese.
 \end{abstract}
 
 \begin{resumo}
 Este trabalho investiga o uso de Modelos de Linguagem de Grande Escala (LLMs)
 de codigo aberto para simular opinioes de brasileiros sobre desigualdade social,
-adaptando a metodologia de \citet{miranda2025} ao contexto brasileiro.
-Utilizando dados da Pesquisa 04839 do CESOP/UNICAMP ($N{=}2000$), condicionamos
+adaptando a metodologia de \cite{miranda2025} ao contexto brasileiro.
+Utilizando dados da Pesquisa 04839 do CESOP/UNICAMP ($N=2000$), condicionamos
 o modelo \texttt{flan-t5-xl} a dez atributos sociodemograficos e simulamos
 respostas a seis questoes em configuracao zero-shot: uma questao de ranking
 sobre desigualdade racial (P01) e cinco itens Likert sobre desigualdade
 estrutural (P06A--E).
 A fidelidade distributiva foi avaliada por Jensen-Shannon Distance (JSD),
-divergencia KL e Earth Mover's Distance. A acuracia individual foi comparada
-com um Random Forest com validacao cruzada de 5 folds, e valores SHAP foram
-usados para identificar as variaveis demograficas mais influentes.
-O LLM atingiu acuracia individual media de 19,3\% e JSD medio de 0,29, enquanto
-o Random Forest alcancu 41,2\% de acuracia. Ao contrario de \citet{miranda2025},
-o LLM nao superou o modelo supervisionado em nivel distributivo, provavelmente
-pelo uso de um modelo nao otimizado para o portugues.
+divergencia KL e Earth Mover's Distance; a acuracia individual foi comparada
+com um Random Forest com validacao cruzada de 5 folds; e valores SHAP
+identificaram as variaveis demograficas mais influentes.
+O LLM atingiu acuracia media de 19,3\% e JSD medio de 0,29, enquanto o
+Random Forest alcancou 41,2\%. Diferentemente de \cite{miranda2025}, o LLM
+nao superou o modelo supervisionado em nivel distributivo, provavelmente pelo
+uso de um modelo nao otimizado para o portugues.
 \end{resumo}
+
 
 \section{Introducao}
 
 Pesquisas de opiniao publica sao instrumentos fundamentais para compreender
-como a populacao percebe fenomenos como a desigualdade social. No Brasil,
-o CESOP/UNICAMP \citep{cesop2023} mantem um dos maiores acervos de dados
-de opiniao publica do pais. Contudo, a realizacao dessas pesquisas e
-custosa e demorada, o que motiva a busca por metodos computacionais
-que possam complementa-las.
+como diferentes grupos percebem fenomenos sociais como a desigualdade.
+No Brasil, o CESOP/UNICAMP \cite{cesop2023} mantem um dos maiores acervos
+de dados de opiniao publica do pais. Contudo, a realizacao dessas pesquisas
+e custosa e demorada, o que motiva a busca por metodos computacionais
+complementares.
 
 Modelos de Linguagem de Grande Escala (LLMs) vem sendo explorados como
-potenciais simuladores de respondentes sinteticos \citep{argyle2023, park2023}.
-\citet{miranda2025} mostraram que LLMs condicionados a perfis demograficos
+simuladores de respondentes sinteticos \cite{argyle2023,park2023}.
+\cite{miranda2025} mostraram que LLMs condicionados a perfis demograficos
 conseguem reproduzir distribuicoes de opiniao proximas das reais em dados
 eleitorais americanos, superando um Random Forest na fidelidade distributiva.
 
@@ -86,31 +84,32 @@ Pesquisa 04839 do CESOP/UNICAMP sobre percepcao de desigualdade, e avalia
 se LLMs abertos, sem custo de API, conseguem simular respostas de brasileiros
 com qualidade comparavel ao modelo supervisionado.
 
+
 \section{Trabalhos Relacionados}
 
-\citet{argyle2023} introduziram o conceito de \textit{silicon sampling},
+\cite{argyle2023} introduziram o conceito de \textit{silicon sampling},
 condicionando LLMs a backstories demograficas para simular sub-populacoes
-especificas. \citet{miranda2025} aplicaram essa ideia ao dataset ANES 2020
-(EUA) com o modelo Gemma3 12B, encontrando que o LLM produz distribuicoes
-de opiniao mais proximas do real do que um Random Forest, mesmo sem treinamento
-nas respostas. \citet{bail2024} discute o potencial e os limites do uso de
-IA generativa nas ciencias sociais, destacando a importancia de validacao
-empirica. \citet{tornberg2023} aplicaram LLMs para simular comportamento em
-redes sociais, evidenciando que esses modelos capturam padroes de grupo
-com razoavel fidelidade.
+especificas. \cite{miranda2025} aplicaram essa ideia ao dataset ANES 2020
+com o modelo Gemma3 12B, encontrando que o LLM produz distribuicoes de
+opiniao mais proximas do real do que um Random Forest.
+\cite{bail2024} discutem o potencial e os limites do uso de IA generativa
+nas ciencias sociais, destacando a importancia de validacao empirica.
+\cite{tornberg2023} aplicaram LLMs para simular comportamento em redes
+sociais, evidenciando que esses modelos capturam padroes de grupo com
+razoavel fidelidade.
 
-No Brasil, o desenvolvimento de modelos de linguagem para o portugues avancou
-com o BERTimbau \citep{souza2020}, mas a aplicacao de LLMs para simulacao
-de opiniao publica brasileira permanece pouco explorada.
+No Brasil, o desenvolvimento de modelos de linguagem para o portugues
+avancou com o BERTimbau \cite{souza2020}, mas a aplicacao de LLMs para
+simulacao de opiniao publica brasileira permanece pouco explorada.
+
 
 \section{Metodologia}
 
 \subsection{Dados}
 
-Utilizamos a Pesquisa 04839 do CESOP/UNICAMP \citep{cesop2023}, com
-$N{=}2000$ respondentes e 49 variaveis. Uma amostra estratificada de
-200 respondentes (10\%) foi selecionada para os experimentos, com
-estratificacao pela variavel P01 para preservar a distribuicao das respostas.
+Utilizamos a Pesquisa 04839 do CESOP/UNICAMP \cite{cesop2023}, com
+$N=2000$ respondentes e 49 variaveis. Uma amostra estratificada de
+200 respondentes (10\%) foi selecionada para os experimentos.
 Apos a remocao de respostas ``nao sabe/nao respondeu'' (codigo 99),
 o dataset limpo contou com 1.727 respondentes validos.
 
@@ -126,54 +125,49 @@ agrupadas: religiao de 20 para 6 grupos; escolaridade de 16 para 5 niveis.
 P01: ``Em qual local voce acredita que existe mais diferenca no tratamento
 de pessoas negras e brancas?'' (9 opcoes).
 
-P06A--E: Concordancia (Likert 1--5) com cinco afirmacoes:
+P06A--E: Concordancia (escala Likert 1--5) com cinco afirmacoes:
 \begin{itemize}
-  \item[A] A abordagem policial e baseada em cabelo, vestimenta e cor de pele;
-  \item[B] Maior presenca de negros e indigenas nas universidades e bom para a sociedade;
-  \item[C] Representatividade de negros, mulheres e LGBTQIA+ na politica reduz desigualdades;
-  \item[D] O mercado imobiliario garante moradia digna para toda a populacao;
-  \item[E] Mudancas climaticas afetam igualmente todas as pessoas, independente de raca/classe.
+  \item[A:] A abordagem policial e baseada em cabelo, vestimenta e cor de pele;
+  \item[B:] Maior presenca de negros e indigenas nas universidades e bom para a sociedade;
+  \item[C:] Representatividade de negros, mulheres e LGBTQIA+ na politica reduz desigualdades;
+  \item[D:] O mercado imobiliario garante moradia digna para toda a populacao;
+  \item[E:] Mudancas climaticas afetam igualmente todas as pessoas, independente de raca/classe.
 \end{itemize}
 
 \subsection{Modelo LLM}
 
-Utilizamos o \texttt{google/flan-t5-xl} \citep{chung2022}, disponivel
+Utilizamos o \texttt{google/flan-t5-xl} \cite{chung2022}, disponivel
 gratuitamente no HuggingFace sem autenticacao, executado no Google Colab
-com GPU T4. A escolha se justifica pela ausencia de restricoes de acesso
-e pela viabilidade de execucao no ambiente gratuito.
-
-Os prompts descrevem o perfil sociodemografico do respondente em linguagem
-natural (\textit{backstory}), seguido da pergunta e das opcoes numeradas,
-instruindo o modelo a responder apenas com o numero da opcao. Exemplo:
+com GPU T4. Os prompts descrevem o perfil sociodemografico do respondente
+em linguagem natural (\textit{backstory}), seguido da pergunta e das opcoes
+numeradas, instruindo o modelo a responder apenas com o numero da opcao.
+Exemplo de prompt para P06A:
 
 \begin{quote}
 \small
-\textit{``Voce e um cidadao brasileiro com o seguinte perfil: mulher, entre
-35 e 44 anos, escolaridade: ensino medio completo, renda familiar: de 2 a 5
-salarios minimos, regiao: Nordeste, mora em capital, raca/cor: parda,
-religiao: evangelica. Afirmacao: `A abordagem policial e baseada no tipo de
-cabelo, vestimenta e cor de pele das pessoas.' Voce concorda ou discorda?
-Opcoes: (1) Concorda totalmente (2) Concorda em parte (3) Nem concorda nem
-discorda (4) Discorda em parte (5) Discorda totalmente.
-Responda APENAS com o numero da opcao (1--5):''}
+\textit{``Voce e um cidadao brasileiro: mulher, entre 35 e 44 anos,
+ensino medio completo, renda familiar de 2 a 5 SM, Nordeste, capital,
+parda, evangelica. Afirmacao: `A abordagem policial e baseada em cabelo,
+vestimenta e cor de pele.' Concordancia?
+(1) Totalmente (2) Em parte (3) Neutro (4) Discorda em parte
+(5) Discorda totalmente. Responda com o numero:''}
 \end{quote}
 
 \subsection{Protocolo Experimental}
 
-A simulacao foi executada com $K{=}3$ repeticoes independentes para
-estimativa de variancia. O Random Forest \citep{breiman2001} foi treinado
-com validacao cruzada estratificada de 5 folds sobre os mesmos 200
-respondentes. Valores SHAP \citep{lundberg2017} foram calculados sobre
-um Random Forest treinado nas predicoes agregadas do LLM, para identificar
-quais variaveis demograficas mais influenciam as respostas simuladas.
+A simulacao foi executada com $K=3$ repeticoes independentes. O Random
+Forest \cite{breiman2001} foi treinado com validacao cruzada estratificada
+de 5 folds sobre os mesmos 200 respondentes. Valores SHAP \cite{lundberg2017}
+foram calculados sobre um Random Forest treinado nas predicoes agregadas
+do LLM, identificando as variaveis demograficas mais influentes.
 
 \subsection{Metricas}
 
 \textbf{Nivel individual:} acuracia e F1-score macro.
 
-\textbf{Nivel distributivo}, conforme \citet{miranda2025}:
+\textbf{Nivel distributivo} \cite{miranda2025}: Jensen-Shannon Distance (JSD),
+metrica principal, simetrica e limitada a $[0,1]$:
 
-Jensen-Shannon Distance (JSD), metrica principal, simetrica e limitada a $[0,1]$:
 \begin{equation}
   \text{JSD}(P \| Q) = \sqrt{\frac{1}{2}D_{KL}(P\|M) + \frac{1}{2}D_{KL}(Q\|M)},
   \quad M = \frac{P+Q}{2}
@@ -181,111 +175,111 @@ Jensen-Shannon Distance (JSD), metrica principal, simetrica e limitada a $[0,1]$
 
 Earth Mover's Distance (EMD/Wasserstein), sensivel a ordem da escala Likert.
 
+
 \section{Resultados}
 
-\subsection{Desempenho Individual}
+\subsection{Desempenho Individual e Distributivo}
 
-A Tabela~\ref{tab:resultados} apresenta as metricas do LLM por variavel,
-media sobre 3 repeticoes, e a acuracia do Random Forest com CV 5-fold.
+A Tabela~\ref{tab:resultados} apresenta as metricas do LLM (media, 3 runs)
+e do Random Forest (CV 5-fold).
 
-\begin{table}[H]
-  \centering
-  \caption{Desempenho do LLM (media, 3 runs) e do Random Forest (CV 5-fold)}
-  \label{tab:resultados}
-  \small
-  \begin{tabular}{lcccccc}
-    \toprule
-    \textbf{Questao} & \textbf{Acc LLM} & \textbf{F1 LLM} & \textbf{JSD} & \textbf{EMD} & \textbf{Acc RF} & \textbf{F1 RF} \\
-    \midrule
-    P01  & 0,133 & 0,112 & 0,279 & 0,678 & 0,245 & 0,118 \\
-    P06A & 0,210 & 0,178 & 0,290 & 0,623 & 0,330 & 0,179 \\
-    P06B & 0,177 & 0,127 & 0,428 & 1,567 & 0,725 & 0,168 \\
-    P06C & 0,207 & 0,187 & 0,231 & 0,543 & 0,400 & 0,227 \\
-    P06D & 0,218 & 0,202 & 0,219 & 0,368 & 0,275 & 0,215 \\
-    P06E & 0,210 & 0,173 & 0,313 & 0,810 & 0,495 & 0,204 \\
-    \midrule
-    \textbf{Media} & \textbf{0,193} & \textbf{0,163} & \textbf{0,293} & \textbf{0,765} & \textbf{0,412} & \textbf{0,185} \\
-    \bottomrule
-  \end{tabular}
+\begin{table}[ht]
+\centering
+\caption{Desempenho do LLM (media, 3 runs) e do Random Forest (CV 5-fold)}
+\label{tab:resultados}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Questao} & \textbf{Acc LLM} & \textbf{F1 LLM} & \textbf{JSD} & \textbf{EMD} & \textbf{Acc RF} & \textbf{F1 RF} \\
+\midrule
+P01  & 0,133 & 0,112 & 0,279 & 0,678 & 0,245 & 0,118 \\
+P06A & 0,210 & 0,178 & 0,290 & 0,623 & 0,330 & 0,179 \\
+P06B & 0,177 & 0,127 & 0,428 & 1,567 & 0,725 & 0,168 \\
+P06C & 0,207 & 0,187 & 0,231 & 0,543 & 0,400 & 0,227 \\
+P06D & 0,218 & 0,202 & 0,219 & 0,368 & 0,275 & 0,215 \\
+P06E & 0,210 & 0,173 & 0,313 & 0,810 & 0,495 & 0,204 \\
+\midrule
+\textbf{Media} & \textbf{0,193} & \textbf{0,163} & \textbf{0,293} & \textbf{0,765} & \textbf{0,412} & \textbf{0,185} \\
+\bottomrule
+\end{tabular}
 \end{table}
 
 O Random Forest supera o LLM em acuracia individual em todas as questoes,
-com destaque para P06B (72,5\% vs 17,7\%). O LLM apresenta melhor
-desempenho nas questoes P06C e P06D, tanto em F1 quanto em JSD.
+com destaque para P06B (72,5\% vs. 17,7\%). O LLM apresenta melhor
+desempenho distributivo nas questoes P06C e P06D (JSD 0,231 e 0,219).
 
 \subsection{Distribuicoes: Real vs. Simulado}
 
 A Figura~\ref{fig:dist} compara as distribuicoes de respostas reais e
-simuladas pelo LLM. O modelo tende a concentrar respostas nas extremidades
-da escala Likert, o que explica o alto EMD em P06B (1,567).
+simuladas. O modelo tende a concentrar respostas nas extremidades da escala
+Likert, o que explica o alto EMD em P06B (1,567).
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{../results/figures/resultados_figures/distribuicoes_real_vs_llm.png}
-  \caption{Distribuicoes reais vs. LLM simulado -- CESOP 04839}
-  \label{fig:dist}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{../results/figures/resultados_figures/distribuicoes_real_vs_llm.png}
+\caption{Distribuicoes reais vs. LLM simulado -- CESOP 04839}
+\label{fig:dist}
 \end{figure}
 
 \subsection{Comparacao LLM vs. Random Forest}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{../results/figures/resultados_figures/llm_vs_rf.png}
-  \caption{Acuracia e F1-macro: LLM vs. Random Forest (CV 5-fold)}
-  \label{fig:rf}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.95\textwidth]{../results/figures/resultados_figures/llm_vs_rf.png}
+\caption{Acuracia e F1-macro: LLM vs. Random Forest (CV 5-fold)}
+\label{fig:rf}
 \end{figure}
 
 \subsection{Explicabilidade (SHAP)}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{../results/figures/resultados_figures/shap_importance.png}
-  \caption{Importancia SHAP das variaveis demograficas nas predicoes do LLM}
-  \label{fig:shap}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{../results/figures/resultados_figures/shap_importance.png}
+\caption{Importancia SHAP das variaveis demograficas nas predicoes do LLM}
+\label{fig:shap}
 \end{figure}
 
 A analise SHAP (Figura~\ref{fig:shap}) indica que raca/cor e renda familiar
 sao as variaveis que mais influenciam as predicoes do LLM nas questoes de
-desigualdade racial (P01 e P06A), enquanto regiao e escolaridade ganham mais
-peso nas questoes sobre politicas publicas (P06C e P06D).
+desigualdade racial (P01 e P06A), enquanto regiao e escolaridade ganham
+mais peso nas questoes sobre politicas publicas (P06C e P06D).
+
 
 \section{Discussao}
 
 Os resultados mostram que o LLM \texttt{flan-t5-xl} tem desempenho individual
-limitado (acuracia media de 19,3\%), inferior ao Random Forest (41,2\%).
-Esse resultado contrasta com \citet{miranda2025}, que encontraram desempenho
-individual comparavel entre LLM e Random Forest. A principal explicacao e
-que o \texttt{flan-t5-xl} foi treinado majoritariamente em ingles, o que
-reduz sua capacidade de capturar nuances culturais e linguisticas do contexto
-brasileiro.
+limitado (acuracia media 19,3\%), inferior ao Random Forest (41,2\%). Esse
+resultado contrasta com \cite{miranda2025}, que encontraram desempenho
+individual comparavel entre LLM e Random Forest usando o Gemma3 12B.
+A principal explicacao e que o \texttt{flan-t5-xl} foi treinado
+majoritariamente em ingles, reduzindo sua capacidade de capturar nuances
+culturais do contexto brasileiro.
 
 A questao P06B (presenca de negros e indigenas nas universidades) apresentou
-o pior desempenho do LLM em JSD (0,428) e EMD (1,567), sugerindo que o modelo
-possui um vies pre-treinado forte nessa questao que nao corresponde a
-distribuicao real da populacao brasileira. Em contrapartida, P06D (mercado
-imobiliario) e P06C (representatividade politica) obtiveram os melhores
-resultados em JSD (0,219 e 0,231), indicando que o LLM consegue aproximar
-melhor a distribuicao real nessas questoes.
+o pior desempenho em JSD (0,428) e EMD (1,567), sugerindo que o modelo possui
+vies pre-treinado forte que nao corresponde a distribuicao real da populacao
+brasileira. Em contrapartida, P06D e P06C obtiveram os melhores JSD (0,219 e
+0,231), indicando que o LLM aproxima melhor a distribuicao real nessas questoes.
 
-Em nivel distributivo, o LLM nao superou o Random Forest, diferentemente
-do que observaram \citet{miranda2025}. Isso sugere que a escolha do modelo
-e determinante: modelos maiores e otimizados para portugues, como o Sabiá
-ou versoes do Llama 3 treinadas em PT-BR, provavelmente produziriam
-resultados mais proximos dos obtidos no estudo de referencia.
+Em nivel distributivo, o LLM nao superou o Random Forest, diferentemente de
+\cite{miranda2025}. Isso reforca que a escolha do modelo e determinante:
+modelos maiores e otimizados para portugues, como o Sabia ou versoes do
+Llama 3 treinadas em PT-BR, provavelmente produziriam resultados mais
+proximos do estudo de referencia.
+
 
 \section{Conclusao}
 
-Este trabalho aplicou a metodologia de simulacao de opiniao publica por LLMs
-ao contexto brasileiro, usando dados reais do CESOP/UNICAMP e modelos
-completamente abertos. Os resultados indicam que, com o \texttt{flan-t5-xl},
-o LLM nao iguala o Random Forest em acuracia individual nem em fidelidade
-distributiva, mas consegue capturar alguns padroes populacionais, especialmente
-nas questoes de politicas publicas.
+Este trabalho aplicou a simulacao de opiniao publica por LLMs ao contexto
+brasileiro, usando dados reais do CESOP/UNICAMP e modelos completamente abertos.
+Com o \texttt{flan-t5-xl}, o LLM nao igualou o Random Forest em acuracia
+individual nem em fidelidade distributiva, mas capturou alguns padroes
+populacionais, especialmente nas questoes de politicas publicas (P06C e P06D).
 
 Como trabalhos futuros, recomenda-se o uso de modelos nativos de portugues
-(BERTimbau, Sabiá), o aumento da amostra para pelo menos 500 respondentes
-e a inclusao de variaveis atitudinais nos prompts, seguindo a categorização
-de \citet{miranda2025}.
+(BERTimbau, Sabia), o aumento da amostra para pelo menos 500 respondentes
+e a inclusao de variaveis atitudinais nos prompts, seguindo a categorizacao
+de \cite{miranda2025}.
 
 \bibliographystyle{sbc}
 \bibliography{referencias}
