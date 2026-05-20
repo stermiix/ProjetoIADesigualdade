@@ -55,7 +55,7 @@ jupyter notebook notebooks/simulacao_opiniao_publica.ipynb
 
 ## Dados
 
-Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/). O arquivo `.sav` não está no repositório por restrição de distribuição — baixe diretamente no site do CESOP.
+Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/).
 
 ## Autores
 
