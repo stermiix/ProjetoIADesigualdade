@@ -28,6 +28,17 @@ ProjetoIADesigualdade/
 ├── data/
 │   └── raw/04839/
 ├── results/
+|   ├── figures/resultados_figures
+|       ├── confusion_matrices.png
+|       ├── distribuicoes_reais.png
+|       ├── distribuicao_real_x_llm.png
+|       ├── llm_x_rf.png
+|       ├── metricas_llm.png
+|       ├── shap_importance.png
+|   ├── metrics/resultados_metrics
+|       ├── llm_metrics.csv
+|       ├── llm_vs_rf.csv
+|       ├── summary.json
 └── requirements.txt
 ```
 
