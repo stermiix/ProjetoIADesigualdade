@@ -1,6 +1,6 @@
 # Projeto IA — Simulação de Opinião Pública sobre Desigualdade
 
-Trabalho da disciplina de Inteligência Artificial.
+Trabalho da disciplina de Inteligência Artificial — Curso de Ciência da Computação, Universidade Presbiteriana Mackenzie.
 
 O objetivo é usar um modelo de linguagem (LLM) para simular como brasileiros respondem perguntas sobre desigualdade social, comparando as respostas geradas com os dados reais de uma pesquisa do CESOP/UNICAMP.
 
@@ -8,12 +8,20 @@ O objetivo é usar um modelo de linguagem (LLM) para simular como brasileiros re
 
 A ideia central é: dado o perfil de uma pessoa (sexo, idade, escolaridade, renda, região, raça/cor, religião...), conseguimos prever como ela responderia uma pesquisa de opinião?
 
-Usamos dados da **Pesquisa 04839 do CESOP/UNICAMP** — "Percepção dos Brasileiros sobre Temas Relacionados à Desigualdade" — com 2000 respondentes, e simulamos respostas para duas perguntas:
+Usamos dados da **Pesquisa 04839 do CESOP/UNICAMP** — "Percepção dos Brasileiros sobre Temas Relacionados à Desigualdade" — com 2000 respondentes, e simulamos respostas para seis questões:
 
 - **P01**: Em qual local existe mais diferença no tratamento entre pessoas negras e brancas?
 - **P06 (A–E)**: Concordância com afirmações sobre desigualdade estrutural (escala Likert 1–5)
 
-As respostas simuladas são comparadas com as reais usando Jensen-Shannon Distance, KL divergence e F1-macro. O projeto também compara o LLM com um Random Forest e aplica SHAP para identificar quais variáveis demográficas mais influenciam as respostas.
+As respostas simuladas são comparadas com as reais usando Jensen-Shannon Distance, KL Divergence e F1-macro. O projeto também compara o LLM com um Random Forest (validação cruzada 5-fold) e aplica SHAP para identificar quais variáveis demográficas mais influenciam as respostas.
+
+## Resultados principais
+
+| Métrica | LLM (flan-t5-xl) | Random Forest |
+|---|---|---|
+| Acurácia média | 19,3% | 41,2% |
+| F1-macro médio | 16,3% | 18,5% |
+| JSD médio | 0,293 | — |
 
 ## Estrutura
 
@@ -28,17 +36,8 @@ ProjetoIADesigualdade/
 ├── data/
 │   └── raw/04839/
 ├── results/
-|   ├── figures/resultados_figures
-|       ├── confusion_matrices.png
-|       ├── distribuicoes_reais.png
-|       ├── distribuicao_real_x_llm.png
-|       ├── llm_x_rf.png
-|       ├── metricas_llm.png
-|       ├── shap_importance.png
-|   ├── metrics/resultados_metrics
-|       ├── llm_metrics.csv
-|       ├── llm_vs_rf.csv
-|       ├── summary.json
+│   ├── figures/resultados_figures/
+│   └── metrics/resultados_metrics/
 └── requirements.txt
 ```
 
@@ -52,10 +51,10 @@ ProjetoIADesigualdade/
 
 ## Como rodar
 
-Desenvolvido para rodar no **Google Colab** sem GPU local ou API keys pagas.
+Desenvolvido para rodar no **Google Colab** sem GPU local ou API keys pagas. O arquivo de dados já está incluso no repositório.
 
-1. Abra `notebooks/simulacao_opiniao_publica.ipynb` no Colab
-2. Faça upload do `04839.sav` quando solicitado (disponível no CESOP/UNICAMP)
+1. Clique no badge "Abrir no Colab" acima
+2. Vá em **Ambiente de execução → Alterar tipo → GPU T4**
 3. Execute as células em ordem
 
 Para rodar localmente:
@@ -63,10 +62,6 @@ Para rodar localmente:
 pip install -r requirements.txt
 jupyter notebook notebooks/simulacao_opiniao_publica.ipynb
 ```
-
-## Dados
-
-Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/).
 
 ## Autores
 
@@ -82,7 +77,7 @@ Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/).
 - Argyle, L.P. et al. *Out of One, Many: Using Language Models to Simulate Human Samples*. Political Analysis, 31(3), 2023. https://doi.org/10.1017/pan.2023.2
 - Park, J.S. et al. *Generative Agents: Interactive Simulacra of Human Behavior*. UIST, 2023. https://doi.org/10.1145/3586183.3606763
 - Bail, C.A. *Can Generative AI Improve Social Science?* PNAS, 121(21), 2024. https://doi.org/10.1073/pnas.2314021121
-- Törnberg, P. et al. *Simulating Social Media Using Large Language Models to Evaluate Alternative News Feed Algorithms*. arXiv:2310.05984, 2023.
+- Törnberg, P. et al. *Simulating Social Media Using Large Language Models*. arXiv:2310.05984, 2023.
 - Breiman, L. *Random Forests*. Machine Learning, 45(1), 2001. https://doi.org/10.1023/A:1010933404324
 - Lundberg, S.M.; Lee, S. *A Unified Approach to Interpreting Model Predictions*. NeurIPS, 2017.
 - Souza, F. et al. *BERTimbau: Pretrained BERT Models for Brazilian Portuguese*. BRACIS, 2020. https://doi.org/10.1007/978-3-030-61377-8_28
