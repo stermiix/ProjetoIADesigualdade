@@ -33,7 +33,7 @@ ProjetoIADesigualdade/
 
 ## Arquivos
 
-- [Notebook principal](notebooks/simulacao_opiniao_publica.ipynb)
+- [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/stermiix/ProjetoIADesigualdade/blob/main/notebooks/simulacao_opiniao_publica.ipynb) — Notebook principal
 - [Artigo SBC (LaTeX)](artigo/artigo_sbc.tex)
 - [Artigo de referência](artigo/entropy-27-00923.pdf)
 - [Questionário CESOP](data/raw/04839/quest_04839.pdf)
@@ -65,6 +65,15 @@ Pesquisa **04839** do [CESOP/UNICAMP](https://www.cesop.unicamp.br/).
 - João Victor Martins — 10417928
 - Leonardo Patriani Cardoso — 10417188
 
-## Referência principal
+## Referências
 
-Miranda, F.; Balbi, P.P. *Simulating Public Opinion: Comparing Distributional and Individual-Level Predictions from LLMs and Random Forests*. Entropy, 27(9), 923, 2025. https://doi.org/10.3390/e27090923
+- Miranda, F.; Balbi, P.P. *Simulating Public Opinion: Comparing Distributional and Individual-Level Predictions from LLMs and Random Forests*. Entropy, 27(9), 923, 2025. https://doi.org/10.3390/e27090923
+- Argyle, L.P. et al. *Out of One, Many: Using Language Models to Simulate Human Samples*. Political Analysis, 31(3), 2023. https://doi.org/10.1017/pan.2023.2
+- Park, J.S. et al. *Generative Agents: Interactive Simulacra of Human Behavior*. UIST, 2023. https://doi.org/10.1145/3586183.3606763
+- Bail, C.A. *Can Generative AI Improve Social Science?* PNAS, 121(21), 2024. https://doi.org/10.1073/pnas.2314021121
+- Törnberg, P. et al. *Simulating Social Media Using Large Language Models to Evaluate Alternative News Feed Algorithms*. arXiv:2310.05984, 2023.
+- Breiman, L. *Random Forests*. Machine Learning, 45(1), 2001. https://doi.org/10.1023/A:1010933404324
+- Lundberg, S.M.; Lee, S. *A Unified Approach to Interpreting Model Predictions*. NeurIPS, 2017.
+- Souza, F. et al. *BERTimbau: Pretrained BERT Models for Brazilian Portuguese*. BRACIS, 2020. https://doi.org/10.1007/978-3-030-61377-8_28
+- IBGE. *Síntese de Indicadores Sociais 2023*. https://www.ibge.gov.br/
+- CESOP/UNICAMP. *Pesquisa 04839 — Percepção dos Brasileiros sobre Desigualdade*, 2023. https://www.cesop.unicamp.br/
