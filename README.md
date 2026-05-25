@@ -41,6 +41,10 @@ ProjetoIADesigualdade/
 └── requirements.txt
 ```
 
+## Vídeo de apresentação
+
+[![Assistir no YouTube](https://img.shields.io/badge/YouTube-Assistir-red?logo=youtube)](https://www.youtube.com/watch?v=fe0G1uh6r5E)
+
 ## Arquivos
 
 - [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/stermiix/ProjetoIADesigualdade/blob/main/notebooks/simulacao_opiniao_publica.ipynb) — Notebook principal
